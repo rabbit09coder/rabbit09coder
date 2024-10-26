@@ -1,0 +1,102 @@
+@echo off
+setlocal enabledelayedexpansion
+
+:: Introduction with ASCII art
+echo ============================================================
+echo              Welcome to the Mouse Sensitivity Calculator
+echo ============================================================
+pause
+
+:: Section 1: Prompt for display resolution
+:DisplayResolution
+set /p HRes=Enter your display resolution width (e.g., 1920): 
+set /p VRes=Enter your display resolution height (e.g., 1080): 
+set /p confirmResolution=Is this resolution correct? (Y/N): 
+if /i "%confirmResolution%"=="Y" (
+    echo Display Resolution: %HRes%x%VRes%
+) else (
+    goto :DisplayResolution
+)
+pause
+
+:: Section 2: Refresh rate
+:RefreshRate
+set /p RefreshRate=Enter your refresh rate (e.g., 60): 
+set /p confirmRefresh=Is this refresh rate correct? (Y/N): 
+if /i "%confirmRefresh%"=="Y" (
+    echo Refresh Rate: %RefreshRate% Hz
+) else (
+    goto :RefreshRate
+)
+pause
+
+:: Section 3: Polling rate
+:PollingRate
+set /p PollingRate=Enter your mouse polling rate (e.g., 500): 
+set /p confirmPolling=Is this polling rate correct? (Y/N): 
+if /i "%confirmPolling%"=="Y" (
+    echo Polling Rate: %PollingRate% Hz
+) else (
+    goto :PollingRate
+)
+pause
+
+:: Section 4: Mouse DPI
+:DPI
+set /p DPI=Enter your mouse DPI (e.g., 800): 
+set /p confirmDPI=Is this DPI correct? (Y/N): 
+if /i "%confirmDPI%"=="Y" (
+    echo Mouse DPI: %DPI%
+) else (
+    goto :DPI
+)
+pause
+
+:: Calculate the hexadecimal values
+set /a X1=(HRes * DPI) / 10
+set /a Y1=(VRes * DPI * PollingRate) / 1000
+set /a X2=X1 + 500
+set /a Y2=Y1 + 500
+set /a X3=X2 + 500
+set /a Y3=Y2 + 500
+set /a X4=X3 + 500
+set /a Y4=Y3 + 500
+set /a X5=X4 + 500
+set /a Y5=Y4 + 500
+
+:: Convert each number to hexadecimal and ensure they’re padded properly
+set HX1=0x%X1%
+set HY1=0x%Y1%
+set HX2=0x%X2%
+set HY2=0x%Y2%
+set HX3=0x%X3%
+set HY3=0x%Y3%
+set HX4=0x%X4%
+set HY4=0x%Y4%
+set HX5=0x%X5%
+set HY5=0x%Y5%
+
+:: Generate the registry format for mouse curve
+set REG_FORMAT_X=%HX1% %HY1% %HX2% %HY2% %HX3% %HY3% %HX4% %HY4% %HX5% %HY5%
+set REG_FORMAT_Y=%HX1% %HY1% %HX2% %HY2% %HX3% %HY3% %HX4% %HY4% %HX5% %HY5%
+
+:: Show registry format for SmoothMouseXCurve and SmoothMouseYCurve
+echo ============================================
+echo Generated Registry Entries:
+echo ============================================
+echo "SmoothMouseXCurve"=hex:\ %REG_FORMAT_X%
+echo "SmoothMouseYCurve"=hex:\ %REG_FORMAT_Y%
+echo ============================================
+pause
+
+:: Exit confirmation
+:ExitConfirmation
+set /p exitConfirm=Do you want to exit? (Y/N): 
+if /i "%exitConfirm%"=="Y" (
+    echo Exiting script...
+    timeout /t 3 >nul
+    exit
+) else (
+    echo Returning to the start of the script.
+    goto :DisplayResolution
+)
